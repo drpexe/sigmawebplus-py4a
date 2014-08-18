@@ -1232,7 +1232,7 @@ public class SDLSurfaceView extends SurfaceView implements SurfaceHolder.Callbac
                 return super.sendKeyEvent(event);
             }
 
-            @Override
+            //@Override
             public boolean setComposingRegion(int start, int end){
                 if (DEBUG) Log.d("Python:", String.format("Set Composing Region %s %s", start, end));
                 finishComposingText();
@@ -1285,10 +1285,11 @@ public class SDLSurfaceView extends SurfaceView implements SurfaceHolder.Callbac
                     return super.getExtractedText(request, flags);
             }
 
-            @Override
+            //@Override
             public CharSequence getSelectedText(int flags){
                 if (DEBUG) Log.d("Python:", String.format("getSelectedText %s", flags));
-                    return super.getSelectedText(flags);
+                    //return super.getSelectedText(flags);
+                    return "";
             }
 
             @Override
