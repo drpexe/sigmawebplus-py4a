@@ -9,8 +9,10 @@ import android.util.Log;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.os.Process;
+import android.app.AlarmManager;
+import android.widget.Toast;
 
-public class PythonService extends Service  implements Runnable {
+public class PythonAlarmService extends Service  implements Runnable {
 
     // Thread for Python code
     protected Thread pythonThread = null;
@@ -22,6 +24,7 @@ public class PythonService extends Service  implements Runnable {
     protected String pythonPath;
     // Argument to pass to Python code,
     protected String pythonServiceArgument;
+    protected String pythonServiceInterval;
     public static Service mService = null;
 
     @Override
@@ -36,12 +39,27 @@ public class PythonService extends Service  implements Runnable {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.i("python", "------PythonAlarmService: onStartCommand");
+        Bundle extras = intent.getExtras();
+        Context context = getApplicationContext();
+
+        //Schedule alarm
+        pythonServiceInterval = extras.getString("pythonAlarmServiceInterval");
+        //Intent myIntent = new Intent(MainActivity.this, MyAlarmService.class);
+        PendingIntent pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        
+        AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 10000, pendingIntent);
+        
+        Toast.makeText(getApplicationContext(), "this is my Toast message!!! =)", Toast.LENGTH_SHORT).show();
+
+
         if (pythonThread != null) {
             Log.v("python service", "service exists, do not start again");
             return START_NOT_STICKY;
         }
 
-        Bundle extras = intent.getExtras();
+        //Bundle extras = intent.getExtras();
         androidPrivate = extras.getString("androidPrivate");
         // service code is located in service subdir
         androidArgument = extras.getString("androidArgument") + "/service";
@@ -54,7 +72,7 @@ public class PythonService extends Service  implements Runnable {
         pythonThread = new Thread(this);
         pythonThread.start();
 
-        Context context = getApplicationContext();
+        //Context context = getApplicationContext();
         Notification notification = new Notification(context.getApplicationInfo().icon,
                 serviceTitle,
                 System.currentTimeMillis());
@@ -76,6 +94,8 @@ public class PythonService extends Service  implements Runnable {
 
     @Override
     public void run(){
+
+        Log.i("python", "------PythonAlarmService: Run");
 
         // libraries loading, the same way PythonActivity.run() do
         System.loadLibrary("sdl");
@@ -103,16 +123,8 @@ public class PythonService extends Service  implements Runnable {
         }
 
         this.mService = this;
-        nativeInitJavaEnv();
-        nativeStart(androidPrivate, androidArgument, pythonHome, pythonPath,
+        PythonService.nativeInitJavaEnv();
+        PythonService.nativeStart(androidPrivate, androidArgument, pythonHome, pythonPath,
                 pythonServiceArgument);
     }
-
-    // Native part
-    public static native void nativeStart(String androidPrivate, String androidArgument,
-            String pythonHome, String pythonPath,
-            String pythonServiceArgument);
-
-    public static native void nativeInitJavaEnv();
-
 }

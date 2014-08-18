@@ -18,7 +18,9 @@
 
   <application android:label="@string/appName"
                android:icon="@drawable/icon"
+               {% if android_api >= 9 %}
 			   android:hardwareAccelerated="true"
+               {% endif %}
                >
 
 	{% for m in args.meta_data %}
@@ -79,6 +81,8 @@
     <service android:name="org.renpy.android.PythonService"
              android:process=":PythonService"/>
     {% endif %}
+    <service android:name="org.renpy.android.PythonAlarmService"
+             android:process=":PythonAlarmService"/>
 
 	{% if args.billing_pubkey %}
 	<service android:name="org.renpy.android.billing.BillingService"

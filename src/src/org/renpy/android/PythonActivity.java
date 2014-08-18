@@ -364,6 +364,30 @@ public class PythonActivity extends Activity implements Runnable {
         PythonActivity.mActivity.stopService(serviceIntent);
     }
 
+    public static void start_alarm_service(String serviceTitle, String serviceDescription,
+            String pythonServiceArgument, String pythonServiceInterval) {
+        Log.i("python", "vai ---- ksdasdsadasdsa");
+        Intent serviceIntent = new Intent(PythonActivity.mActivity, PythonAlarmService.class);
+        String argument = PythonActivity.mActivity.getFilesDir().getAbsolutePath();
+        String filesDirectory = PythonActivity.mActivity.mPath.getAbsolutePath();
+        serviceIntent.putExtra("androidPrivate", argument);
+        serviceIntent.putExtra("androidArgument", filesDirectory);
+        serviceIntent.putExtra("pythonHome", argument);
+        serviceIntent.putExtra("pythonPath", argument + ":" + filesDirectory + "/lib");
+        serviceIntent.putExtra("serviceTitle", serviceTitle);
+        serviceIntent.putExtra("serviceDescription", serviceDescription);
+        serviceIntent.putExtra("pythonServiceArgument", pythonServiceArgument);
+        serviceIntent.putExtra("pythonServiceInterval", pythonServiceInterval);
+        Log.i("python", "1vai ---- ksdasdsadasdsa");
+        PythonActivity.mActivity.startService(serviceIntent);
+        Log.i("python", "2vai ---- ksdasdsadasdsa");
+    }
+
+    public static void stop_alarm_service() {
+        Intent serviceIntent = new Intent(PythonActivity.mActivity, PythonAlarmService.class);
+        PythonActivity.mActivity.stopService(serviceIntent);
+    }
+
     //----------------------------------------------------------------------------
     // Listener interface for onNewIntent
     //
